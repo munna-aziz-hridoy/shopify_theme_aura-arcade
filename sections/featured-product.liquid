@@ -17,33 +17,57 @@
       </div>
     </div>
     <div class="col">
-      <p class="title fw-bold fs-2">{{ product.title }}</p>
-      <p class="price text-primary fw-semibold">Price: {{ product.price | money }}</p>
-      <div class="description" style="font-size: 14px;">
-        {{ product.description }}
-      </div>
       {% form 'product'
         , product %}
-        <input
-          type="hidden"
-          name="id"
-          value="{{ product.selected_or_first_available_variant.id }}">
-        <div class="quantity_selector my-3">
-          <label>Quantity:</label>
-          <input
-            type="number"
-            name="quantity"
-            value="1"
-            min="1"
-            class="form-control my-3">
-          <div class="actions">
-            <button
-              class="btn btn-primary w-100"
-              type="submit"
-              name="add">Add to cart</button>
-          </div>
-        </div>
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'title' %}
+              <p class="title fw-bold fs-2">{{ product.title }}</p>
+            {% when 'price' %}
+              <p class="price text-primary fw-semibold">Price: {{ product.price | money }}</p>
+            {% when 'description' %}
+              <div class="description" style="font-size: 14px;">
+                {{ product.description }}
+              </div>
+
+            {% when 'variant' %}
+              <select class="form-select" aria-label="Default select example">
+                <option selected disabled>Variant</option>
+                {% for variant in product.variants %}
+                  <option value="1">{{ variant.title }}</option>
+                {% endfor %}
+              </select>
+
+            {% when 'quantity' %}
+              <div class="quantity_selector my-3">
+                <input
+                  type="hidden"
+                  name="id"
+                  value="{{ product.selected_or_first_available_variant.id }}">
+                <label>Quantity:</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  class="form-control my-3">
+              </div>
+
+            {% when 'addToCart' %}
+
+              <div class="quantity_selector my-3">
+                <div class="actions">
+                  <button
+                    class="btn btn-primary w-100"
+                    type="submit"
+                    name="add">Add to cart</button>
+                </div>
+              </div>
+
+          {% endcase %}
+        {% endfor %}
       {% endform %}
+
     </div>
   </div>
 </section>
@@ -59,10 +83,60 @@
         "label": "Select Featured product"
       }
     ],
+    "blocks": [
+      {
+        "type": "title",
+        "name": "Product title",
+        "limit": 1
+      },
+      {
+        "type": "price",
+        "name": "Product price",
+        "limit": 1
+      },
+      {
+        "type": "description",
+        "name": "Description",
+        "limit": 1
+      },
+      {
+        "type": "quantity",
+        "name": "Product uqantity",
+        "limit": 1
+      },
+      {
+        "type": "variant",
+        "name": "Product Variant",
+        "limit": 1
+      },
+      {
+        "type": "addToCart",
+        "name": "Add to cart button",
+        "limit": 1
+      }
+    ],
     "presets": [
       {
         "name": "Featured product",
-        "category": "Product"
+        "category": "Product",
+        "blocks": [
+          {
+            "type": "title"
+          },
+          {
+            "type": "price"
+          },
+          {
+            "type": "quantity"
+          },
+          {
+            "type": "description"
+          },
+          {
+            "type": "addToCart"
+          }
+
+        ]
       }
     ]
   }
