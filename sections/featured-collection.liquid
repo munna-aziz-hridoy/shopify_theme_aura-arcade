@@ -18,19 +18,8 @@
     <div class="row row-cols-1 row-cols-md-{{ col_count }} g-4">
       {% for product in collection.products limit: product_count %}
         <div class="col">
-          <div class="card h-100">
-            <img
-              src="{{ product.featured_image |  img_url: 'medium' }}"
-              class="card-img-top"
-              alt="{{ product.title }}"
-              width="100%"
-              height="250">
-            <div class="card-body ">
-              <h5 class="card-title text-start">{{ product.title }}</h5>
-              <p class="card-text fw-bolder text-start">{{ product.price | money }}</p>
-              <a href="#" class="btn btn-primary w-100">Go somewhere</a>
-            </div>
-          </div>
+          {% render 'product-card'
+            , product: product %}
         </div>
       {% endfor %}
     </div>

@@ -1,63 +1,177 @@
-{%- comment -%}
-  This is a required section for the Shopify Theme Store.
-  It is available when you add "Newsletter" section on the Theme Editor.
+{% style %}
+  #newsletter_{{ section.id }} {
+    padding-left: {{ section.settings.padding_left |  times: 0.75 |  round: 0 }}px;
+    padding-right: {{ section.settings.padding_left |  times: 0.75 |  round: 0 }}px;
+    padding-top: {{ section.settings.padding_top |  times: 0.75 |  round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_top |  times: 0.75 |  round: 0 }}px;
+    margin-top: {{ section.settings.margin |  times: 0.75 |  round: 0 }}px;
+    margin-bottom: {{ section.settings.margin |  times: 0.75 |  round: 0 }}px;
+    background-color: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }}
+  }
+{% endstyle %}
 
-  Theme Store required settings
-  - Heading: title of the newsletter section
-  - Subheading: description of the newsletter section
-{%- endcomment -%}
-<section>
-  {% if section.settings.section_title != blank %}
-    <label for="Email">{{ section.settings.section_title | escape }}</label>
-  {% endif %}
-  {% if section.settings.subheading != blank %}
-    <p>{{ section.settings.subheading | escape }}</p>
-  {% endif %}
 
-  {% form 'customer' %}
-    {{ form.errors | default_errors }}
-    {% if form.posted_successfully? %}
-      <p>{{ 'general.newsletter_form.confirmation' | t }}</p>
-    {% else %}
-      <input type="hidden" name="contact[tags]" value="newsletter">
-      <input type="email"
-        name="contact[email]"
-        id="Email"
-        value="{% if customer.email != blank %}{{ customer.email }}{% endif %}"
-        placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
-        autocorrect="off"
-        autocapitalize="off">
-      <button type="submit" name="commit" id="Subscribe">
-        <span>{{ 'general.newsletter_form.submit' | t }}</span>
-      </button>
-    {% endif %}
-  {% endform %}
+<section class="newsletter-section" id="newsletter_{{ section.id }}">
+  <div class="container">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'title' %}
+          <div style="max-width: 768px;" class="newsletter-from text-center mx-auto">
+            <h1 class="title">{{ block.settings.title | escape }}</h1>
+          </div>
+
+        {% when 'description' %}
+          <div style="max-width: 768px;" class="newsletter-from text-center mx-auto">
+            <p>{{ block.settings.description }}</p>
+          </div>
+
+        {% when 'email_form' %}
+          {% form 'customer'
+            , class: 'newsletter-form' %}
+            <div style="max-width: 768px;" class="mx-auto my-5">
+              <div class="input-group input-group-lg">
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="{{ block.settings.placeholder_text }}"
+                  name="contact[email]">
+                <span class="input-group-btn input-group-lg">
+                  <button
+                    style="background-color: {{ block.settings.btn_color }}; color: {{ block.settings.btn_text_color }}"
+                    class="btn rounded-start-0 rounded-end"
+                    type="submit">{{ block.settings.btn_text }}</button>
+                </span>
+              </div>
+            </div>
+          {% endform %}
+
+
+      {% endcase %}
+    {% endfor %}
+  </div>
 </section>
+
 
 {% schema %}
   {
     "name": "Newsletter",
     "settings": [
       {
-        "type": "text",
-        "id": "section_title",
-        "label": "Heading",
-        "default": "Subscribe to our newsletter"
+        "type": "range",
+        "id": "padding_top",
+        "label": "Padding Top & Bottom",
+        "min": 0,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "default": 50
       },
       {
-        "type": "text",
-        "id": "subheading",
-        "label": "Subheading",
-        "default": "A short sentence describing what someone will receive by subscribing"
+        "type": "range",
+        "id": "padding_left",
+        "label": "Padding Left & Right",
+        "min": 0,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "default": 50
       },
       {
-        "type": "paragraph",
-        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+        "type": "range",
+        "id": "margin",
+        "label": "margin",
+        "min": 0,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "default": 50
+      },
+      {
+        "type": "color",
+        "id": "bg_color",
+        "label": "Background Color",
+        "default": "#f1f1f1"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text Color",
+        "default": "#fff"
       }
     ],
-    "presets": [{
-      "name": "Newsletter",
-      "category": "Promotional"
-    }]
+    "blocks": [
+      {
+        "type": "title",
+        "name": "Title",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Enter title",
+            "default": "Subscribe to our Newsletter"
+          }
+        ]
+      },
+      {
+        "type": "description",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "richtext",
+            "id": "description",
+            "label": "Type your description here",
+            "default": "<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus nam repellendus dolor eaque consectetur provident omnis quae voluptatem placeat magni!</p>"
+          }
+        ]
+      },
+      {
+        "type": "email_form",
+        "name": "Email Form",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Enter button text",
+            "default": "Subscribe now"
+          },
+          {
+            "type": "color",
+            "id": "btn_color",
+            "label": "Button Color",
+            "default": "#0049ff"
+          },
+          {
+            "type": "color",
+            "id": "btn_text_color",
+            "label": "Button Text Color",
+            "default": "#fff"
+          },
+          {
+            "type": "text",
+            "id": "placeholder_text",
+            "label": "Enter placeholder text",
+            "default": "Enter your email"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Newsletter",
+        "category": "email",
+        "blocks": [
+          {
+            "type": "title"
+          },
+          {
+            "type": "email_form"
+          }
+        ]
+      }
+    ]
   }
 {% endschema %}

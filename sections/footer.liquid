@@ -1,22 +1,208 @@
-<footer class="py-3 my-4">
-  <div class="container">
-    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-      <li class="nav-item">
-        <a href="#" class="nav-link px-2 text-body-secondary">Home</a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link px-2 text-body-secondary">Features</a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link px-2 text-body-secondary">Pricing</a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link px-2 text-body-secondary">FAQs</a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link px-2 text-body-secondary">About</a>
-      </li>
-    </ul>
-    <p class="text-center text-body-secondary">© 2024 Company, Inc</p>
+{% liquid
+  assign blockSize = section.blocks.size
+
+
+  assign colMd = blockSize
+  assign colLg = blockSize
+
+  if blockSize > 4
+    assign colMd = 4
+  endif
+
+  if blockSize > 5
+    assign colLg = 5
+  endif
+%}
+
+
+{% style %}
+  {% for block in section.blocks %}
+    {% if block.type == 'image' %}
+      .footer_image_{{ forloop.index }} {
+        width: {{ block.settings.image_width }}px;
+        height: {{ block.settings.image_height }}px;
+        border-radius: {{ block.settings.image_radius }}px;
+        box-shadow: {{ block.settings.shadow_x }}px{{ ' ' }}
+        {{ block.settings.shadow_y }}px{{ ' ' }}
+        {{ block.settings.blur }}px{{ ' ' }}
+        {{ block.settings.spreed }}px{{ ' ' }}
+        {{ block.settings.shadow_color }}
+      }
+
+      {% if block.settings.is_box_shadow == false %}
+        .footer_image_{{ forloop.index }} {
+          box-shadow: none;
+        }
+      {% endif %}
+
+    {% endif %}
+  {% endfor %}
+{% endstyle %}
+
+
+<div class="container">
+  <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-{{ colMd }} row-cols-lg-{{ colLg }} py-5 my-5 border-top">
+
+
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'image' %}
+          <div class="col mb-3">
+            <h4 class="fs-5">{{ block.settings.image_title }}</h4>
+            <p class="fs-6 text-body-secondary">{{ block.settings.image_text }}</p>
+            <img
+              class="footer_image footer_image_{{ forloop.index }}"
+              width="100%"
+              height="auto"
+              src="{{ block.settings.footer_image |  image_url: width: 500 }}"
+              alt="">
+          </div>
+
+        {% when 'description' %}
+          <div class="col mb-3">
+            <h4>{{ block.settings.descrip_title }}</h4>
+            <div>
+              {{ block.settings.description }}
+            </div>
+          </div>
+        {% when 'links' %}
+          <div class="col mb-3">
+            <h4>{{ block.settings.link_title }}</h4>
+            <ul class="nav flex-column">
+              {% for link in block.settings.footer_menu.links %}
+                <li class="nav-item mb-2">
+                  <a href="{{ link.url }}" class="nav-link p-0 text-body-secondary">{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+
+          </div>
+
+      {% else %}
+
+        {% endcase %}
+      {% endfor %}
+
+
+    </footer>
+    <div>
+      <p class="text-body-secondary text-center">{{ section.settings.copyright }} ©{{ 'now' | date: "%Y" }} {{ shop.name }}</p>
+    </div>
   </div>
-</footer>
+
+
+  {% schema %}
+    {
+      "name": "Footer",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Copyright Text",
+          "id": "copyright"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "links",
+          "name": "Footer Links",
+          "limit": 4,
+          "settings": [
+            {
+              "type": "text",
+              "label": "Link heading",
+              "id": "link_title",
+              "default": "Footer title"
+            },
+            {
+              "type": "link_list",
+              "id": "footer_menu",
+              "label": "Select Menu"
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "name": "Footer Image",
+          "limit": 2,
+          "settings": [
+
+            {
+              "type": "text",
+              "label": "Image heading",
+              "id": "image_title",
+              "default": "Image title"
+            },
+            {
+              "type": "text",
+              "label": "Image text",
+              "id": "image_text",
+              "default": "Image text"
+            },
+            {
+              "type": "image_picker",
+              "id": "footer_image",
+              "label": "Select Image",
+              "info": "Recommended size 200x200 px"
+            },
+            {
+              "type": "range",
+              "min": 50,
+              "max": 300,
+              "default": 150,
+              "step": 10,
+              "id": "image_width",
+              "label": "Image Width",
+              "unit": "px"
+            },
+            {
+              "type": "range",
+              "min": 50,
+              "max": 300,
+              "default": 150,
+              "step": 10,
+              "id": "image_height",
+              "label": "Image Height",
+              "unit": "px"
+            },
+            {
+              "type": "range",
+              "min": 0,
+              "max": 150,
+              "default": 4,
+              "step": 2,
+              "id": "image_radius",
+              "label": "Image Radius",
+              "unit": "px"
+            }
+
+
+          ]
+        },
+        {
+          "type": "description",
+          "name": "Footer Description",
+          "limit": 2,
+          "settings": [
+            {
+              "type": "text",
+              "label": "Description heading",
+              "id": "descrip_title",
+              "default": "Description title"
+            },
+            {
+              "type": "richtext",
+              "label": "Description",
+              "id": "description",
+              "default": "<p>Start writing.....</p>"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "Footer",
+          "category": "footer"
+        }
+      ]
+    }
+  {% endschema %}

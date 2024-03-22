@@ -1,0 +1,28 @@
+<div>
+  <h2 class="fs-4 fw-semibold text-center mt-5">{{ collection.title }}</h2>
+  <p class="fs-6 fw-medium text-center mt-2 mb-5">{{ collection.description | escape }}</p>
+
+
+  <div class="row">
+    <div class="col-3">
+      <ul class="list-group list-group-flush">
+
+        {% for tag in collection.all_tags %}
+          <li class="list-group-item">{{ tag }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-9">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for product in collection.products %}
+          <div class="col">
+            {% render 'product-card'
+              , product: product %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+</div>
