@@ -1,3 +1,13 @@
+{% style %}
+  .price_container {
+    display: flex;
+    /* flex-direction: column; */
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+{% endstyle %}
+
 <div class="card h-100 w-100 p-0 shadow border-0">
   <img
     src="{{ product.featured_image |  img_url: 'medium' }}"
@@ -7,7 +17,25 @@
     height="250">
   <div class="card-body ">
     <h5 class="card-title text-start">{{ product.title }}</h5>
-    <p class="card-text fw-bolder text-start">{{ product.price | money }}</p>
+    <div class="price_container">
+
+
+      {% if product.price_varies %}
+        <p class="card-text fw-bolder text-start mb-0">
+          <span>From {{ product.price_min | money }}</span>
+          <span>
+            -
+          </span>
+          <span>{{ product.price_max | money }}</span>
+        </p>
+      {% else %}
+        <p class="card-text fw-bolder text-start mb-0">{{ product.price | money }}</p>
+      {% endif %}
+
+      <p class="card-text fw-medium text-start text-danger mt-0" style="font-size: 14px;">
+        <del>{{ product.compare_at_price | money_without_currency | escape }}</del>
+      </p>
+    </div>
     <a href="{{ product.url }}" class="btn btn-primary w-100">View Product</a>
   </div>
 </div>
