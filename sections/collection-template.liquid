@@ -27,14 +27,20 @@
         </div>
 
       </div>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        {% for product in collection.products %}
-          <div class="col">
-            {% render 'product-card'
-              , product: product %}
-          </div>
-        {% endfor %}
-      </div>
+      {% paginate collection.products by 9 %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          {% for product in collection.products %}
+            <div class="col">
+              {% render 'product-card'
+                , product: product %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="d-flex justify-content-center mt-5">
+          {% render 'bootstrap-paginate'
+            , paginate: paginate %}
+        </div>
+      {% endpaginate %}
     </div>
   </div>
 </div>
